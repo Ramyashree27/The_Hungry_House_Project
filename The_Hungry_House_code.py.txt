@@ -1,0 +1,634 @@
+from tkinter import *
+from tkinter import messagebox
+import random
+import time
+import mysql.connector as db
+
+mydb = db.connect(host="localhost", user="root", passwd="ramya27", database="ramya")
+mycursor = mydb.cursor()
+
+root = Tk()
+root.geometry("1500x500+0+0")
+root.title("LAUGHTER IS BRIGHTEST IN THE PLACE WHERE FOOD IS :)")
+root.configure(background='black')
+
+##===================frameworks====================
+
+Tops = Frame(root, width=1000, height=40, bd=10, relief="raise")
+Tops.pack(side=TOP)
+
+f1 = Frame(root, width=800, height=450, bd=6, relief="raise")
+f1.pack(side=LEFT)
+f2 = Frame(root, width=400, height=600, bd=6, relief="raise")
+f2.pack(side=RIGHT)
+
+f1a = Frame(f1, width=700, height=300, bd=8, relief="raise")
+f1a.pack(side=TOP)
+f2a = Frame(f1, width=600, height=280, bd=8, relief="raise")
+f2a.pack(side=BOTTOM)
+
+ft2 = Frame(f2, width=400, height=350, bd=8, relief="raise")
+ft2.pack(side=TOP)
+fb2 = Frame(f2, width=330, height=250, bd=8, relief="raise")
+fb2.pack(side=BOTTOM)
+
+f1aa = Frame(f1a, width=300, height=230, bd=8, relief="raise")
+f1aa.pack(side=LEFT)
+f1ab = Frame(f1a, width=300, height=230, bd=8, relief="raise")
+f1ab.pack(side=RIGHT)
+
+f2aa = Frame(f2a, width=300, height=230, bd=8, relief="raise")
+f2aa.pack(side=LEFT)
+f2ab = Frame(f2a, width=300, height=230, bd=8, relief="raise")
+f2ab.pack(side=RIGHT)
+
+Tops.configure(background='black')
+f1.configure(background='black')
+f2.configure(background='black')
+
+# =================price================
+
+PriceCoffee = 35
+PriceAmericano = 115
+PriceCappuccino = 115
+PriceCheese_Cake = 75
+PriceChocolate_Cake = 75
+PricePineapple_Juice = 50
+PriceMango_Juice = 50
+PriceRoti = 45
+PriceIdly = 35
+PricePlain_Dosa = 40
+PriceMasala_Dosa = 50
+PriceEgg_Biryani = 75
+PriceChicken_Biryani = 85
+PriceChicken_Kabab = 100
+PriceVeg_Noodles_Soup = 65
+PriceCorn_Soup = 65
+
+
+# ============CostofItem=============
+
+def CostofItem():
+    Item1 = float(E_Coffee.get())
+    Item2 = float(E_Americano.get())
+    Item3 = float(E_Cappuccino.get())
+    Item4 = float(E_Cheese_Cake.get())
+    Item5 = float(E_Chocolate_Cake.get())
+    Item6 = float(E_Pineapple_Juice.get())
+    Item7 = float(E_Mango_Juice.get())
+    Item8 = float(E_Roti.get())
+    Item9 = float(E_Idly.get())
+    Item10 = float(E_Plain_Dosa.get())
+    Item11 = float(E_Masala_Dosa.get())
+    Item12 = float(E_Egg_Biryani.get())
+    Item13 = float(E_Chicken_Biryani.get())
+    Item14 = float(E_Chicken_Kabab.get())
+    Item15 = float(E_Veg_Noodles_Soup.get())
+    Item16 = float(E_Corn_Soup.get())
+
+    ItemDiscount = float(E_Discount.get())
+
+    # ===============TotalCost===================
+
+    Total = ((Item1 * PriceCoffee) + (Item2 * PriceAmericano)
+             + (Item3 * PriceCappuccino) + (Item4 * PriceCheese_Cake)
+             + (Item5 * PriceChocolate_Cake) + (Item6 * PricePineapple_Juice)
+             + (Item7 * PriceMango_Juice) + (Item8 * PriceRoti)
+             + (Item9 * PriceIdly) + (Item10 * PricePlain_Dosa)
+             + (Item11 * PriceMasala_Dosa) + (Item12 * PriceEgg_Biryani)
+             + (Item13 * PriceChicken_Biryani) + (Item14 * PriceChicken_Kabab)
+             + (Item15 * PriceVeg_Noodles_Soup) + (Item16 * PriceCorn_Soup))
+    Grand_Total = str(float(Total * float(1 - (ItemDiscount / 100))))
+
+    E_Total.set(str(Total))
+    E_Grand_Total.set(Grand_Total)
+
+
+# ================= functions===============
+
+def Sub():
+    Return = str(float(E_Pay.get()) - float(E_Grand_Total.get()))
+    E_Return.set(Return)
+
+
+def Apply():
+    E_Grand_Total.set(str(float(E_Total.get()) * (1 - (float(E_Discount.get()) / 100))))
+
+
+def qExit():
+    qExit = messagebox.askyesno("Quit System", "Do you want to quit?")
+    if qExit > 0:
+        root.destroy()
+        return
+
+
+def Reset():
+    SetVal()  ## set 0
+    var = [var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11, var12, var13, var14, var15, var16]
+    for i in range(16):
+        var[i].set("0")
+
+    var20.set("0")
+
+    arr = [txtCoffee, txtAmericano, txtCappuccino, txtCheese_Cake, txtChocolate_Cake,
+           txtPineapple_Juice,
+           txtMango_Juice, txtRoti, txtIdly, txtPlain_Dosa, txtMasala_Dosa,
+           txtEgg_Biryani, txtChicken_Biryani, txtChicken_Kabab, txtVeg_Noodles_Soup,
+           txtCorn_Soup]
+    for i in range(16):
+        arr[i].configure(state=DISABLED)
+
+    txtDiscount.configure(state=DISABLED)
+
+# =====================Receipts==================
+
+def Receipt():
+    txtReceipt.delete("1.0", END)
+    x = random.randint(10908, 500876)
+    randomRef = str(x)
+    Receipt_Ref.set("BILL" + randomRef)
+
+    txtReceipt.insert(END,
+                      'Receipt Ref: ' + Receipt_Ref.get() + '\t\t' + DateofOrder.get() + ' ' + TimeofOrder.get() + "\n")
+
+    txtReceipt.insert(END, 'Item\t\t\t' + 'Qty\t' + "Cost of itmes\n")
+    txtReceipt.insert(END, "--------------------------------------------------------------------------\n")
+    if E_Coffee.get() != '0':
+        txtReceipt.insert(END, 'Coffee:\t\t\t' + E_Coffee.get() + '\t' + str(
+            int(E_Coffee.get()) * PriceCoffee) + "\n")
+    if E_Americano.get() != '0':
+        txtReceipt.insert(END, 'Americano: \t\t\t' + E_Americano.get() + '\t' + str(
+            int(E_Americano.get()) * PriceAmericano) + "\n")
+    if E_Cappuccino.get() != '0':
+        txtReceipt.insert(END, 'Cappuccino: \t\t\t' + E_Cappuccino.get() + '\t' + str(
+            int(E_Cappuccino.get()) * PriceCappuccino) + "\n")
+    if E_Cheese_Cake.get() != '0':
+        txtReceipt.insert(END, 'Cheese_Cake: \t\t\t' + E_Cheese_Cake.get() + '\t' + str(
+            int(E_Cheese_Cake.get()) * PriceCheese_Cake) + "\n")
+    if E_Chocolate_Cake.get() != '0':
+        txtReceipt.insert(END, 'Chocolate_Cake: \t\t\t' + E_Chocolate_Cake.get() + '\t' + str(
+            int(E_Chocolate_Cake.get()) * PriceChocolate_Cake) + "\n")
+    if E_Pineapple_Juice.get() != '0':
+        txtReceipt.insert(END, 'Pineapple_Juice: \t\t\t' + E_Pineapple_Juice.get() + '\t' + str(
+            int(E_Pineapple_Juice.get()) * PricePineapple_Juice) + "\n")
+    if E_Mango_Juice.get() != '0':
+        txtReceipt.insert(END, 'Mango_Juice: \t\t\t' + E_Mango_Juice.get() + '\t' + str(
+            int(E_Mango_Juice.get()) * PriceMango_Juice) + "\n")
+    if E_Roti.get() != '0':
+        txtReceipt.insert(END, 'Roti: \t\t\t ' + E_Roti.get() + '\t' + str(
+            int(E_Roti.get()) * PriceRoti) + "\n")
+    if E_Idly.get() != '0':
+        txtReceipt.insert(END, 'Idly: \t\t\t' + E_Idly.get() + '\t' + str(
+            int(E_Idly.get()) * PriceIdly) + "\n")
+    if E_Plain_Dosa.get() != '0':
+        txtReceipt.insert(END, 'Plain_Dosa: \t\t\t' + E_Plain_Dosa.get() + '\t' + str(
+            int(E_Plain_Dosa.get()) * PricePlain_Dosa) + "\n")
+    if E_Masala_Dosa.get() != '0':
+        txtReceipt.insert(END, 'Masala_Dosa: \t\t\t' + E_Masala_Dosa.get() + '\t' + str(
+            int(E_Masala_Dosa.get()) * PriceMasala_Dosa) + "\n")
+    if E_Egg_Biryani.get() != '0':
+        txtReceipt.insert(END, 'Egg_Biryani: \t\t\t' + E_Egg_Biryani.get() + '\t' + str(
+            int(E_Egg_Biryani.get()) * PriceEgg_Biryani) + "\n")
+    if E_Chicken_Biryani.get() != '0':
+        txtReceipt.insert(END, 'Chicken_Biryani: \t\t\t' + E_Chicken_Biryani.get() + '\t' + str(
+            int(E_Chicken_Biryani.get()) * PriceChicken_Biryani) + "\n")
+    if E_Chicken_Kabab.get() != '0':
+        txtReceipt.insert(END, 'Chicken_Kabab: \t\t\t' + E_Chicken_Kabab.get() + '\t' + str(
+            int(E_Chicken_Kabab.get()) * PriceChicken_Kabab) + "\n")
+    if E_Veg_Noodles_Soup.get() != '0':
+        txtReceipt.insert(END, 'Veg_Noodles: \t\t\t' + E_Veg_Noodles_Soup.get() + "\t" + str(
+            int(E_Veg_Noodles_Soup.get()) * PriceVeg_Noodles_Soup) + "\n")
+    if E_Corn_Soup.get() != '0':
+        txtReceipt.insert(END, 'Corn_Soup: \t\t\t' + E_Corn_Soup.get() + "\t" + str(
+            int(E_Corn_Soup.get()) * PriceCorn_Soup) + "\n")
+    txtReceipt.insert(END, "--------------------------------------------------------------------------\n")
+    txtReceipt.insert(END, 'Sub_Total: \t\t\t\t' + E_Total.get() + "\n")
+    txtReceipt.insert(END, 'Discount: \t\t\t\t-' + str(float(E_Discount.get()) / 100 * float(E_Total.get())) + "\n")
+    txtReceipt.insert(END, 'Grand_Total: \t\t\t\t' + E_Grand_Total.get() + "\n")
+
+    billno = Receipt_Ref.get()
+    date = DateofOrder.get()
+    time = TimeofOrder.get()
+    total = E_Total.get()
+    discount = E_Discount.get()
+    grandtotal = E_Grand_Total.get()
+    query = "INSERT INTO the_hungry_house_bill(billno,date,time,total,discount,grandtotal) VALUES(\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\");"%(billno,date,time,total,discount,grandtotal)
+    mycursor.execute(query)
+    mydb.commit()
+
+# ============Heading===========
+
+lblInfo = Label(Tops, font=('arrial', 60, 'bold'), text="          THE HUNGRY HOUSE        ",
+                bd=10, anchor='w')
+lblInfo.grid(row=0, column=0)
+
+# ==========function for pricelist=========
+
+def Pricelist():
+    roo = Tk()
+    roo.geometry("500x700+0+0")
+    roo.title("Price List")
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="ITEM\t\t\t", fg="black", bd=5)
+    lblinfo.grid(row=0, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="_____", fg="white", anchor=W)
+    lblinfo.grid(row=0, column=2)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="PRICE", fg="black", anchor=W)
+    lblinfo.grid(row=0, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Coffee\t\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=1, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="35", fg="steel blue", anchor=W)
+    lblinfo.grid(row=1, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Americano\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=2, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="115", fg="steel blue", anchor=W)
+    lblinfo.grid(row=2, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Cappuuccino\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=3, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="115", fg="steel blue", anchor=W)
+    lblinfo.grid(row=3, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Cheese Cake\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=4, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="75", fg="steel blue", anchor=W)
+    lblinfo.grid(row=4, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Chocolate Cake\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=5, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="75", fg="steel blue", anchor=W)
+    lblinfo.grid(row=5, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Pineapple Juice\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=6, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="50", fg="steel blue", anchor=W)
+    lblinfo.grid(row=6, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Mango Juice\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=7, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="50", fg="steel blue", anchor=W)
+    lblinfo.grid(row=7, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Roti\t\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=8, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="45", fg="steel blue", anchor=W)
+    lblinfo.grid(row=8, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Idly\t\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=9, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="35", fg="steel blue", anchor=W)
+    lblinfo.grid(row=9, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Plain Dosa\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=10, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="40", fg="steel blue", anchor=W)
+    lblinfo.grid(row=10, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Masala Dosa\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=11, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="50", fg="steel blue", anchor=W)
+    lblinfo.grid(row=11, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Egg Biryani\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=12, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="75", fg="steel blue", anchor=W)
+    lblinfo.grid(row=12, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Chicken Biryani\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=13, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="85", fg="steel blue", anchor=W)
+    lblinfo.grid(row=13, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Chicken Kabab\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=14, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="100", fg="steel blue", anchor=W)
+    lblinfo.grid(row=14, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Veg Noodles Soup\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=15, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="65", fg="steel blue", anchor=W)
+    lblinfo.grid(row=15, column=3)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="Corn Soup\t\t", fg="steel blue", anchor=W)
+    lblinfo.grid(row=16, column=0)
+    lblinfo = Label(roo, font=('aria', 15, 'bold'), text="65", fg="steel blue", anchor=W)
+    lblinfo.grid(row=16, column=3)
+
+    roo.mainloop()
+
+
+##============button==========
+
+def chkbutton_value():
+    if var1.get() == 1:
+        txtCoffee.configure(state=NORMAL)
+    elif var1.get() == 0:
+        txtCoffee.configure(state=DISABLED)
+        E_Coffee.set("0")
+
+    if var2.get() == 1:
+        txtAmericano.configure(state=NORMAL)
+    elif var2.get() == 0:
+        txtAmericano.configure(state=DISABLED)
+        E_Americano.set("0")
+
+    if var3.get() == 1:
+        txtCappuccino.configure(state=NORMAL)
+    elif var3.get() == 0:
+        txtCappuccino.configure(state=DISABLED)
+        E_Cappuccino.set("0")
+
+    if var4.get() == 1:
+        txtCheese_Cake.configure(state=NORMAL)
+    elif var4.get() == 0:
+        txtCheese_Cake.configure(state=DISABLED)
+        E_Cheese_Cake.set("0")
+
+    if var5.get() == 1:
+        txtChocolate_Cake.configure(state=NORMAL)
+    elif var5.get() == 0:
+        txtChocolate_Cake.configure(state=DISABLED)
+        E_Chocolate_Cake.set("0")
+
+    if var6.get() == 1:
+        txtPineapple_Juice.configure(state=NORMAL)
+    elif var6.get() == 0:
+        txtPineapple_Juice.configure(state=DISABLED)
+        E_Pineapple_Juice.set("0")
+
+    if var7.get() == 1:
+        txtMango_Juice.configure(state=NORMAL)
+    elif var7.get() == 0:
+        txtMango_Juice.configure(state=DISABLED)
+        E_Mango_Juice.set("0")
+
+    if var8.get() == 1:
+        txtRoti.configure(state=NORMAL)
+    elif var8.get() == 0:
+        txtRoti.configure(state=DISABLED)
+        E_Roti.set("0")
+
+    if var9.get() == 1:
+        txtIdly.configure(state=NORMAL)
+    elif var9.get() == 0:
+        txtIdly.configure(state=DISABLED)
+        E_Idly.set("0")
+
+    if var10.get() == 1:
+        txtPlain_Dosa.configure(state=NORMAL)
+    elif var10.get() == 0:
+        txtPlain_Dosa.configure(state=DISABLED)
+        E_Plain_Dosa.set("0")
+
+    if var11.get() == 1:
+        txtMasala_Dosa.configure(state=NORMAL)
+    elif var11.get() == 0:
+        txtMasala_Dosa.configure(state=DISABLED)
+        E_Masala_Dosa.set("0")
+
+    if var12.get() == 1:
+        txtEgg_Biryani.configure(state=NORMAL)
+    elif var12.get() == 0:
+        txtEgg_Biryani.configure(state=DISABLED)
+        E_Egg_Biryani.set("0")
+
+    if var13.get() == 1:
+        txtChicken_Biryani.configure(state=NORMAL)
+    elif var13.get() == 0:
+        txtChicken_Biryani.configure(state=DISABLED)
+        E_Chicken_Biryani.set("0")
+
+    if var14.get() == 1:
+        txtChicken_Kabab.configure(state=NORMAL)
+    elif var14.get() == 0:
+        txtChicken_Kabab.configure(state=DISABLED)
+        E_Chicken_Kabab.set("0")
+
+    if var15.get() == 1:
+        txtVeg_Noodles_Soup.configure(state=NORMAL)
+    elif var15.get() == 0:
+        txtVeg_Noodles_Soup.configure(state=DISABLED)
+        E_Veg_Noodles_Soup.set("0")
+
+    if var16.get() == 1:
+        txtCorn_Soup.configure(state=NORMAL)
+    elif var16.get() == 0:
+        txtCorn_Soup.configure(state=DISABLED)
+        E_Corn_Soup.set("0")
+
+    if var20.get() == 1:  #
+        txtDiscount.configure(state=NORMAL)
+    elif var20.get() == 0:
+        txtDiscount.configure(state=DISABLED)
+        E_Discount.set("0")
+
+
+# ========= variable============
+
+var0 = IntVar()
+var1 = IntVar()
+var2 = IntVar()
+var3 = IntVar()
+var4 = IntVar()
+var5 = IntVar()
+var6 = IntVar()
+var7 = IntVar()
+var8 = IntVar()
+var9 = IntVar()
+var10 = IntVar()
+var11 = IntVar()
+var12 = IntVar()
+var13 = IntVar()
+var14 = IntVar()
+var15 = IntVar()
+var16 = IntVar()
+
+var20 = IntVar()
+DateofOrder = StringVar()
+TimeofOrder = StringVar()
+Receipt_Ref = StringVar()
+
+E_Coffee = StringVar()
+E_Americano = StringVar()
+E_Cappuccino = StringVar()
+E_Cheese_Cake = StringVar()
+E_Chocolate_Cake = StringVar()
+E_Pineapple_Juice = StringVar()
+E_Mango_Juice = StringVar()
+E_Roti = StringVar()
+
+E_Idly = StringVar()
+E_Plain_Dosa = StringVar()
+E_Masala_Dosa = StringVar()
+E_Egg_Biryani = StringVar()
+E_Chicken_Biryani = StringVar()
+E_Chicken_Kabab = StringVar()
+E_Veg_Noodles_Soup = StringVar()
+E_Corn_Soup = StringVar()
+E_Total = StringVar()
+E_Discount = StringVar()  #
+E_Grand_Total = StringVar()
+E_Return = StringVar()
+E_Pay = StringVar()
+
+DateofOrder.set(time.strftime("%y/%m/%d"))
+TimeofOrder.set(time.strftime("%H:%M:%S"))
+
+def SetVal():
+    arr = [E_Coffee, E_Americano, E_Cappuccino, E_Cheese_Cake, E_Chocolate_Cake, E_Pineapple_Juice,
+           E_Mango_Juice, E_Roti, E_Idly, E_Plain_Dosa, E_Masala_Dosa,
+           E_Egg_Biryani, E_Chicken_Biryani, E_Chicken_Kabab, E_Veg_Noodles_Soup,
+           E_Corn_Soup, E_Discount, E_Total, E_Grand_Total, E_Return, E_Pay]
+    for i in range(21):
+        arr[i].set("0")
+
+# ----------------------------------buttons--------------------------
+Coffee = Checkbutton(f1aa, text="Coffee ", variable=var1, onvalue=1, offvalue=0,
+                     font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=0, sticky=W)
+
+Americano = Checkbutton(f1aa, text="Americano ", variable=var2, onvalue=1, offvalue=0,
+                        font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=1, sticky=W)
+
+Cappuccino = Checkbutton(f1aa, text="Cappuccino  ", variable=var3, onvalue=1, offvalue=0,
+                         font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=2, sticky=W)
+
+Cheese_Cake = Checkbutton(f1aa, text="Cheese_Cake ", variable=var4, onvalue=1, offvalue=0,
+                          font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=3, sticky=W)
+
+Chocolate_Cake = Checkbutton(f1aa, text="Chocolate_Cake ", variable=var5, onvalue=1, offvalue=0,
+                             font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=4, sticky=W)
+
+Pineapple_Juice = Checkbutton(f1aa, text="Pineapple_Juice            ", variable=var6, onvalue=1, offvalue=0,
+                              font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=5, sticky=W)
+
+Mango_Juice = Checkbutton(f1aa, text="Mango_Juice ", variable=var7, onvalue=1, offvalue=0,
+                          font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=6, sticky=W)
+
+Roti = Checkbutton(f1aa, text="Roti ", variable=var8, onvalue=1, offvalue=0,
+                   font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=7, sticky=W)
+
+# =======================buttons==========================
+Idly = Checkbutton(f1ab, text="Idly ", variable=var9, onvalue=1, offvalue=0,
+                   font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=0, sticky=W)
+
+Plain_Dosa = Checkbutton(f1ab, text="Plain_Dosa ", variable=var10, onvalue=1, offvalue=0,
+                         font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=1, sticky=W)
+
+Masala_Dosa = Checkbutton(f1ab, text="Masala_Dosa ", variable=var11, onvalue=1, offvalue=0,
+                          font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=2, sticky=W)
+
+Egg_Biryani = Checkbutton(f1ab, text="Egg_Biryani ", variable=var12, onvalue=1, offvalue=0,
+                          font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=3, sticky=W)
+
+Chicken_Biryani = Checkbutton(f1ab, text="Chicken_Biryani ", variable=var13, onvalue=1, offvalue=0,
+                              font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=4, sticky=W)
+
+Chicken_Kabab = Checkbutton(f1ab, text="Chicken_Kabab ", variable=var14, onvalue=1, offvalue=0,
+                            font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=5, sticky=W)
+
+Veg_Noodles_Soup = Checkbutton(f1ab, text="Veg_Noodles_Soup          ", variable=var15, onvalue=1, offvalue=0,
+                               font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=6, sticky=W)
+
+Corn_Soup = Checkbutton(f1ab, text="Corn_Soup ", variable=var16, onvalue=1, offvalue=0,
+                        font=('arial', 18, 'bold'), command=chkbutton_value).grid(row=7, sticky=W)
+
+# ---------------------------Widget-----------
+txtCoffee = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Coffee,
+                  bd=8, width=6, justify='left', state=DISABLED)
+txtCoffee.grid(row=0, column=1)
+txtAmericano = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Americano,
+                     bd=8, width=6, justify='left', state=DISABLED)
+txtAmericano.grid(row=1, column=1)
+txtCappuccino = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Cappuccino,
+                      bd=8, width=6, justify='left', state=DISABLED)
+txtCappuccino.grid(row=2, column=1)
+txtCheese_Cake = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Cheese_Cake,
+                       bd=8, width=6, justify='left', state=DISABLED)
+txtCheese_Cake.grid(row=3, column=1)
+txtChocolate_Cake = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Chocolate_Cake,
+                          bd=8, width=6, justify='left', state=DISABLED)
+txtChocolate_Cake.grid(row=4, column=1)
+txtPineapple_Juice = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Pineapple_Juice,
+                           bd=8, width=6, justify='left', state=DISABLED)
+txtPineapple_Juice.grid(row=5, column=1)
+txtMango_Juice = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Mango_Juice,
+                       bd=8, width=6, justify='left', state=DISABLED)
+txtMango_Juice.grid(row=6, column=1)
+txtRoti = Entry(f1aa, font=('arial', 16, 'bold'), textvariable=E_Roti,
+                bd=8, width=6, justify='left', state=DISABLED)
+txtRoti.grid(row=7, column=1)
+
+# --------------------
+txtIdly = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Idly,
+                bd=8, width=6, justify='left', state=DISABLED)
+txtIdly.grid(row=0, column=1)
+txtPlain_Dosa = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Plain_Dosa,
+                      bd=8, width=6, justify='left', state=DISABLED)
+txtPlain_Dosa.grid(row=1, column=1)
+txtMasala_Dosa = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Masala_Dosa,
+                       bd=8, width=6, justify='left', state=DISABLED)
+txtMasala_Dosa.grid(row=2, column=1)
+txtEgg_Biryani = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Egg_Biryani,
+                       bd=8, width=6, justify='left', state=DISABLED)
+txtEgg_Biryani.grid(row=3, column=1)
+txtChicken_Biryani = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Chicken_Biryani,
+                           bd=8, width=6, justify='left', state=DISABLED)
+txtChicken_Biryani.grid(row=4, column=1)
+txtChicken_Kabab = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Chicken_Kabab,
+                         bd=8, width=6, justify='left', state=DISABLED)
+txtChicken_Kabab.grid(row=5, column=1)
+txtVeg_Noodles_Soup = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Veg_Noodles_Soup,
+                            bd=8, width=6, justify='left', state=DISABLED)
+txtVeg_Noodles_Soup.grid(row=6, column=1)
+txtCorn_Soup = Entry(f1ab, font=('arial', 16, 'bold'), textvariable=E_Corn_Soup,
+                     bd=8, width=6, justify='left', state=DISABLED)
+txtCorn_Soup.grid(row=7, column=1)
+
+# =================
+Total = Label(f2aa, font=('arial', 16, 'bold'), text="Total \t", bd=8)
+Total.grid(row=2, column=0, sticky=W)
+txtTotal = Entry(f2aa, font=('arial', 16, 'bold'), textvariable=E_Total, bd=8, width=10, justify='left', state=DISABLED)
+txtTotal.grid(row=2, column=1, sticky=W)
+Grand_Total = Label(f2aa, font=('arial', 16, 'bold'), text="Grand Total \t", bd=8)
+Grand_Total.grid(row=3, column=0, sticky=W)
+txtGrand_Total = Entry(f2aa, font=('arial', 16, 'bold'), textvariable=E_Grand_Total,
+                       bd=8, width=10, justify='left', state=DISABLED)
+txtGrand_Total.grid(row=3, column=1, sticky=W)
+
+btnprice = Button(f2aa, padx=2, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                  width=5, text="Price", command=Pricelist).grid(row=4, column=0, sticky=W)
+
+# ===================== discount===========
+
+Discount = Checkbutton(f2ab, text="Discount \t", variable=var20, onvalue=1, offvalue=0,
+                       font=('arial', 16, 'bold'), command=chkbutton_value).grid(row=2, sticky=W)
+txtDiscount = Entry(f2ab, font=('arial', 16, 'bold'), textvariable=E_Discount,
+                    bd=8, width=10, justify='left', state=DISABLED)
+txtDiscount.grid(row=2, column=1, sticky=W)
+# subbtn
+btnAppy = Button(f2ab, padx=16, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                 width=5, text="Apply", command=Apply).grid(row=2, column=2, sticky=W)
+
+# =============pay===========
+
+Pay = Label(f2ab, font=('arial', 16, 'bold'), text="Cash Pay", bd=4)
+Pay.grid(row=3, column=0, sticky=W)
+txtPay = Entry(f2ab, font=('arial', 16, 'bold'), textvariable=E_Pay, bd=4, width=10, justify='left')
+txtPay.grid(row=3, column=1, sticky=W)
+
+# =========subbtn=========
+
+btnSub = Button(f2ab, padx=16, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                width=5, text="=", command=Sub).grid(row=3, column=2, sticky=W)
+# ===
+Return = Label(f2ab, font=('arial', 16, 'bold'), text="Return \t", bd=4)
+Return.grid(row=4, column=0, sticky=W)
+txtReturn = Entry(f2ab, font=('arial', 16, 'bold'), textvariable=E_Return,
+                  bd=4, width=10, justify='left')
+txtReturn.grid(row=4, column=1, sticky=W)
+
+# ==================lbl receipt============
+
+lblReceipt = Label(ft2, font=('arial', 12, 'bold'), text='Reciept', bd=2, anchor='w')
+lblReceipt.grid(row=0, column=0, sticky=W)
+txtReceipt = Text(ft2, width=59, height=22, bg="white", bd=8,
+                  font=('arial', 11, 'bold'))
+txtReceipt.grid(row=1, column=0)
+
+# ======================== button===============
+btnTotal = Button(fb2, padx=16, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                  width=4, text="Total ", command=CostofItem).grid(row=0, column=0)
+btnReceipt = Button(fb2, padx=14, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                    width=4, text="Receipt ", command=Receipt).grid(row=0, column=1)
+btnReset = Button(fb2, padx=14, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                  width=4, text="Reset ", command=Reset).grid(row=0, column=2)
+btnExit = Button(fb2, padx=14, pady=1, bd=4, fg="black", font=('arial', 16, 'bold'),
+                 width=4, text="Exit ", bg="red", command=qExit).grid(row=0, column=3)
+
+root.mainloop()
+
